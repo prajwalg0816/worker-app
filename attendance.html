@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Attendance</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body onload="protect();loadWorkers()">
+
+<nav>
+<a href="dashboard.html">Dashboard</a>
+<a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<select id="worker"></select>
+<input type="date" id="date">
+<select id="status">
+<option value="full">Full Day</option>
+<option value="half">Half Day</option>
+<option value="absent">Absent</option>
+</select>
+<button onclick="mark()">Save</button>
+
+<script src="auth.js"></script>
+<script src="supabase.js"></script>
+<script>
+async function loadWorkers(){
+ const {data}=await supabase.from("workers").select();
+ worker.innerHTML="";
+ data.forEach(w=>{
+  worker.innerHTML+=`<option value="${w.id}">${w.name}</option>`;
+ });
+}
+
+async function mark(){
+ await supabase.from("attendance").insert({
+  worker_id:worker.value,
+  date:date.value,
+  status:status.value
+ });
+ alert("Attendance Saved");
+}
+</script>
+</body>
+</html>
