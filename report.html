@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Report</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body onload="protect();load()">
+
+<nav>
+<a href="dashboard.html">Dashboard</a>
+<a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<table id="rep">
+<tr><th>Worker</th><th>Date</th><th>Status</th><th>Amount</th></tr>
+</table>
+
+<script src="auth.js"></script>
+<script src="supabase.js"></script>
+<script>
+async function load(){
+ const {data}=await supabase
+ .from("attendance")
+ .select("date,status,workers(name,full_pay,half_pay)");
+
+ rep.innerHTML=`<tr><th>Worker</th><th>Date</th><th>Status</th><th>Amount</th></tr>`;
+ data.forEach(r=>{
+  let amt=r.status==="full"?r.workers.full_pay:
+          r.status==="half"?r.workers.half_pay:0;
+  rep.innerHTML+=`
+  <tr>
+    <td>${r.workers.name}</td>
+    <td>${r.date}</td>
+    <td>${r.status}</td>
+    <td>${amt}</td>
+  </tr>`;
+ });
+}
+</script>
+</body>
+</html>
