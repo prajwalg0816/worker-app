@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Workers</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body onload="protect();loadWorkers()">
+
+<nav>
+<a href="dashboard.html">Dashboard</a>
+<a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<h3>Add Worker</h3>
+<input id="name" placeholder="Name">
+<input id="full" type="number" placeholder="Full Day Pay">
+<input id="half" type="number" placeholder="Half Day Pay">
+<button onclick="addWorker()">Save</button>
+
+<table id="tbl">
+<tr><th>Name</th><th>Full</th><th>Half</th><th>Delete</th></tr>
+</table>
+
+<script src="auth.js"></script>
+<script src="supabase.js"></script>
+<script>
+async function addWorker(){
+  await supabase.from("workers").insert({
+    name:name.value,
+    full_pay:full.value,
+    half_pay:half.value
+  });
+  name.value=""; full.value=""; half.value="";
+  loadWorkers();
+}
+
+async function loadWorkers(){
+  const {data}=await supabase.from("workers").select();
+  tbl.innerHTML=`<tr><th>Name</th><th>Full</th><th>Half</th><th>Delete</th></tr>`;
+  data.forEach(w=>{
+    tbl.innerHTML+=`
+    <tr>
+      <td>${w.name}</td>
+      <td>${w.full_pay}</td>
+      <td>${w.half_pay}</td>
+      <td><button onclick="del('${w.id}')">X</button></td>
+    </tr>`;
+  });
+}
+
+async function del(id){
+  await supabase.from("workers").delete().eq("id",id);
+  loadWorkers();
+}
+</script>
+</body>
+</html>
